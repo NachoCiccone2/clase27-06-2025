@@ -219,6 +219,9 @@ void reporte_por_sucursal(VendedorConTotal vendedores_con_total[], int len_vende
     int i = 0;
     while(i<len_vendedores){
         
+        cantidad_ventas_por_sucursal = 0;
+        indice_vendedor_mayor_total_de_comisiones = 0;
+        mayor_total_comision = -1;
         int key = vendedores_con_total[i].sucursal;
         
         while(key == vendedores_con_total[i].sucursal && i<len_vendedores){
@@ -233,10 +236,6 @@ void reporte_por_sucursal(VendedorConTotal vendedores_con_total[], int len_vende
         cout << "\nReporte de sucursal " << nombre_sucursal(key) << ":" << endl;
         cout << "   - Cantidad total de ventas de la sucursal: " << cantidad_ventas_por_sucursal << endl;
         cout << "   - El vendedor con mayor total de comisiones es: " << vendedores_con_total[indice_vendedor_mayor_total_de_comisiones].nombre << " " << vendedores_con_total[indice_vendedor_mayor_total_de_comisiones].apellido << " con un total de: $" << mayor_total_comision << endl;
-        
-        cantidad_ventas_por_sucursal = 0;
-        indice_vendedor_mayor_total_de_comisiones = 0;
-        mayor_total_comision = -1;
     }    
     return;
 }
