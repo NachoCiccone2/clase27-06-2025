@@ -75,7 +75,7 @@ void ordenar_por_sucursal(Vendedor vendedores[], int len_vendedores){
     return;
 }
 
-// Necesario para probar los ej. de busqueda.
+// Necesario para probar los ej.
 void ordenar_vendedores_por_codigo(Vendedor vendedores[], int len_vendedores){
     bool ordenado = false;
     for(int i=0; (i<len_vendedores && !ordenado); i++){
@@ -92,7 +92,7 @@ void ordenar_vendedores_por_codigo(Vendedor vendedores[], int len_vendedores){
     return;
 }
 
-// Necesario para probar los ej. de corte.
+// Necesario para probar los ej.
 void ordenar_ventas_por_codigo(Venta ventas[], int len_ventas){
     bool ordenado = false;
     for(int i=0; (i<len_ventas && !ordenado); i++){
@@ -117,7 +117,7 @@ int buscar_indice_por_codigo (Vendedor vendedores[], int len_vendedores, int cod
         int medio = inicio + (fin-inicio)/2;
         if(vendedores[medio].codigo_vendedor == codigo){
             ret = medio;
-        } else if(vendedores[medio].codigo_vendedor > codigo){
+        } else if(vendedores[medio].codigo_vendedor < codigo){
             inicio = medio+1;
         } else {
             fin = medio-1;
@@ -138,6 +138,7 @@ struct VendedorConTotal{
     int cantidad_ventas;    // - Cantidad de ventas en el mes
 };
 
+// Necesario para probar los ej.
 void ordenar_por_sucursal_con_total_comisiones(VendedorConTotal vendedores_con_total[], int len_vendedores_con_total){
     bool ordenado = false;
     for(int i=0; (i<len_vendedores_con_total && !ordenado); i++){
@@ -154,26 +155,28 @@ void ordenar_por_sucursal_con_total_comisiones(VendedorConTotal vendedores_con_t
     return;
 }
 
+// Para utilizar, ordenar por codigo.
 int obtener_vendedores_con_total_de_comisiones(Vendedor vendedores[], int len_vendedores, Venta ventas[], int len_ventas, VendedorConTotal vendedores_con_total[]){
     int j=0; //indices de "Ventas" y "Ventas_Con_Total".
-    //cout << "\n\nobtener_vendedores_con_total_de_comisiones"<< endl;
+    
     // Recorro el array de vendedores:
     for(int i=0;i<len_vendedores; i++){
         float suma_comisiones = 0;
         int cantidad_ventas_por_vendedor = 0;
         int key = vendedores[i].codigo_vendedor;
-        //cout << "\nVendedor " << i << " : " << vendedores[i].codigo_vendedor << endl;
+        
         while( j<len_ventas && key == ventas[j].codigo_vendedor){
-            //cout << "ventas[" << j << "].monto: " << ventas[j].monto << " ; ventas[" << j << "].comision: " << ventas[j].comision ;
+            
             if((ventas[j].monto > 20000) && (vendedores[i].sucursal == 1)){
                 suma_comisiones += (ventas[j].comision * 1.15);
             } else {
                 suma_comisiones += ventas[j].comision;
             }
-            //cout << " ; suma_comisiones: " << suma_comisiones << endl;
+            
             cantidad_ventas_por_vendedor++;
             j++;
         }
+
         // Utilizo i como indice de "vendedores_con_total", ya que hay un "vendedor_con_total" por cada "vendedor".
         vendedores_con_total[i].codigo_vendedor = vendedores[i].codigo_vendedor;
         vendedores_con_total[i].nombre = vendedores[i].nombre;
@@ -189,34 +192,52 @@ int obtener_vendedores_con_total_de_comisiones(Vendedor vendedores[], int len_ve
 // **5)** Escribir una función que muestre un reporte por sucursal indicando: nombre de la sucursal, cantidad total de ventas y el vendedor con mayor total 
 // de comisiones (usar corte de control).
 
-void reporte_por_sucursal(Vendedor vendedores[], int len_vendedores, VendedorConTotal vendedores_con_total[]){
+// Acá le agregaría mas nombres para las distintas sucursales.
+string nombre_sucursal (int sucursal){
+    string ret;
+    switch (sucursal)
+    {
+        case 1:
+            ret = "Central";
+            break;
+        case 2:
+            ret = "Shopping";
+            break;
+        case 3:
+            ret = "Sucursal 3";
+            break;
+        default:
+            break;
+    }
+    return ret;
+}
+
+void reporte_por_sucursal(VendedorConTotal vendedores_con_total[], int len_vendedores){
     int cantidad_ventas_por_sucursal=0;
     int indice_vendedor_mayor_total_de_comisiones = 0;
     float mayor_total_comision = -1;
-    bool cambio_de_sucursal = false;
-    for(int i=0;i<len_vendedores; i++){
+    int i = 0;
+    while(i<len_vendedores){
         
-        if(!cambio_de_sucursal && vendedores[i].sucursal == 2){
-            cout << "\nReporte de sucursal Centro:" << endl;
-            cout << "   - Cantidad total de ventas de la sucursal: " << cantidad_ventas_por_sucursal << endl;
-            cout << "   - El vendedor con mayor total de comisiones es: " << vendedores[indice_vendedor_mayor_total_de_comisiones].nombre << " " << vendedores[indice_vendedor_mayor_total_de_comisiones].apellido << " con un total de: $" << mayor_total_comision << endl;
-            
-            cantidad_ventas_por_sucursal = 0;
-            indice_vendedor_mayor_total_de_comisiones = 0;
-            mayor_total_comision = -1;
-            cambio_de_sucursal = true;
+        int key = vendedores_con_total[i].sucursal;
+        
+        while(key == vendedores_con_total[i].sucursal && i<len_vendedores){
+            cantidad_ventas_por_sucursal += vendedores_con_total[i].cantidad_ventas;
+            if(vendedores_con_total[i].total_comision > mayor_total_comision){
+                mayor_total_comision = vendedores_con_total[i].total_comision;
+                indice_vendedor_mayor_total_de_comisiones = i;
+            }
+            i++;
         }
 
-        if(vendedores_con_total[i].total_comision > mayor_total_comision){
-            mayor_total_comision = vendedores_con_total[i].total_comision;
-            indice_vendedor_mayor_total_de_comisiones = i;
-        }
-
-        cantidad_ventas_por_sucursal += vendedores_con_total[i].cantidad_ventas;
-    }
-    cout << "\nReporte de sucursal Shopping:" << endl;
-    cout << "   - Cantidad total de ventas de la sucursal: " << cantidad_ventas_por_sucursal << endl;
-    cout << "   - El vendedor con mayor total de comisiones es: " << vendedores[indice_vendedor_mayor_total_de_comisiones].nombre << " " << vendedores[indice_vendedor_mayor_total_de_comisiones].apellido << " con un total de: $" << mayor_total_comision << endl;
+        cout << "\nReporte de sucursal " << nombre_sucursal(key) << ":" << endl;
+        cout << "   - Cantidad total de ventas de la sucursal: " << cantidad_ventas_por_sucursal << endl;
+        cout << "   - El vendedor con mayor total de comisiones es: " << vendedores_con_total[indice_vendedor_mayor_total_de_comisiones].nombre << " " << vendedores_con_total[indice_vendedor_mayor_total_de_comisiones].apellido << " con un total de: $" << mayor_total_comision << endl;
+        
+        cantidad_ventas_por_sucursal = 0;
+        indice_vendedor_mayor_total_de_comisiones = 0;
+        mayor_total_comision = -1;
+    }    
     return;
 }
 
@@ -278,8 +299,10 @@ Vendedor vendedores[MAX_VENDEDORES] = {
     {103, "Ana", "Lopez", 1},
     {105, "Carlos", "Ruiz", 2},
     {107, "Maria", "Garcia", 2},
-    {109, "Luis", "Martinez", 1}};
-int cantVendedores = 5;
+    {109, "Luis", "Martinez", 1},
+    {110, "Nombre1", "Apellido1", 3},
+    {111, "Nombre2", "Apellido2", 3}};
+int cantVendedores = 7;
 
 // Vector de ventas (ordenado por código de vendedor ascendente)
 Venta ventas[MAX_VENTAS] = {
@@ -294,8 +317,11 @@ Venta ventas[MAX_VENTAS] = {
     {107, 23032024, "Heladera", 35000.0, 1050.0},
     {107, 25032024, "Televisor", 40000.0, 1200.0},
     {109, 26032024, "Microondas", 8000.0, 240.0},
-    {109, 28032024, "Cocina", 45000.0, 1350.0}};
-int cantVentas = 12;
+    {109, 28032024, "Cocina", 45000.0, 1350.0},
+    {110, 28032024, "Lavavajillas", 28000.0, 840.0},
+    {111, 28032024, "Televisor", 18000.0, 540.0},
+    {111, 28032024, "Heladera", 35000.0, 1050.0}};
+int cantVentas = 15;
 
 // Vector resultado del apareo
 int main(){
@@ -310,26 +336,21 @@ int main(){
     cout << "\nLista de vendedores antes de ordenar:" << endl;
     mostrar_vendedores(vendedores, cantVendedores);
     ordenar_por_sucursal(vendedores, cantVendedores);
-    cout << "\nLista de vehiculos despues de ordenar:" << endl;
+    cout << "\nLista de vendedores despues de ordenar:" << endl;
     mostrar_vendedores(vendedores, cantVendedores);
 
 
-    cout << "\n3) Busco vendedor con codigo 105:" << endl;
+    cout << "\n3) Busco vendedor de codigos 100 a 112:\n" << endl;
     // Ordeno vendedores por codigo para que funcione correctamente.
     ordenar_vendedores_por_codigo(vendedores, cantVendedores);
-    int indice = buscar_indice_por_codigo (vendedores, cantVendedores, 105);
-    if (indice != -1) {
-        cout << "   Vendedor encontrada en indice " << indice << ". Nombre: " << vendedores[indice].nombre << endl;
-    } else {
-        cout << "   Vendedor no encontrado." << endl;
-    }
-
-    cout << "\n Busco vendedor con codigo 130:" << endl;
-    indice = buscar_indice_por_codigo (vendedores, cantVendedores, 130);
-    if (indice != -1) {
-        cout << "   Vendedor encontrada en indice " << indice << ". Nombre: " << vendedores[indice].nombre << endl;
-    } else {
-        cout << "   Vendedor no encontrado." << endl;
+    int indice;
+    for(int y = 100; y<113; y++){
+        indice = buscar_indice_por_codigo (vendedores, cantVendedores, y);
+        if (indice != -1) {
+            cout << "   Vendedor de indice " << y <<  " encontrada en indice " << indice << ". Nombre: " << vendedores[indice].nombre << endl;
+        } else {
+            cout << "   Vendedor de indice " << y << " no encontrado." << endl;
+        }
     }
 
     cout << "\n4) Genero nuevo vector con ventas totales por mes:" << endl;
@@ -344,7 +365,7 @@ int main(){
     cout << "\n5) Reporte por sucursal:" << endl;
     ordenar_por_sucursal(vendedores, cantVendedores);
     ordenar_por_sucursal_con_total_comisiones(resultado, cantResultado);
-    reporte_por_sucursal(vendedores, cantVendedores, resultado);
+    reporte_por_sucursal(resultado, cantVendedores);
 
     cout << "\n--- Fin de Pruebas ---" << endl;
 
